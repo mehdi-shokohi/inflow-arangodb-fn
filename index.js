@@ -16,7 +16,7 @@ router.post('/query/run', (req, res) => {
 }).response(["application/json"]);
 
 router.get('/query/load', (req, res) => {
-  return inflowSend(res, { "q": "for n in items limit 12000,1000 return n" })
+  return inflowSend(res, { "q": "for n in items limit 12000,1000 return {tid:n.terminologyId,code:n.code,value:n.value}" })
 }).response(["application/json"]);
 
 router.get('/upsert/load', (req, res) => {

@@ -4,10 +4,10 @@
   "engines": {
     "arangodb": "^3.0.0"
   },
-  "name": "hello-world",
-  "version": "0.0.0",
+  "name": "Inflowenger ArangoDb Fn",
+  "version": "0.0.1",
   "license": "Apache-2.0",
-  "author": "ArangoDB GmbH",
-  "description": "A simple Hello World Foxx service",
+  "author": "inflowenger",
+  "description": "impl inflow protocol for arangodb- arangodb fn ",
   "tests": "test/**/*.js"
 }
