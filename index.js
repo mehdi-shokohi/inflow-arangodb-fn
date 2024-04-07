@@ -33,7 +33,7 @@ router.post('/upsert/run', (req, res) => {
     db._createDocumentCollection(body._params.collection);
   }
   body._data.docId = body._headers.inflow.docId
-  const upsertRun = db._query(`upsert {docId:"${body._data.docId}"} insert ${JSON.stringify(body._data)} update ${JSON.stringify(body._data)} into ${body._params.collection}`);
+  const upsertRun = db._query('upsert {docId:@docId} insert @data update @data into @@collection',{'docId':body._data.docId,'data':body._data,'@collection':body._params.collection});
 
   body._data.upsertMessage = upsertRun
 
