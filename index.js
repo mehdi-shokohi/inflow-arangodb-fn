@@ -33,7 +33,9 @@ router.post('/upsert/run', (req, res) => {
     db._createDocumentCollection(body._params.collection);
   }
   body._data.docId = body._headers.inflow.docId
-  const upsertRun = db._query('upsert {docId:@docId} insert @data update @data into @@collection',{'docId':body._data.docId,'data':body._data,'@collection':body._params.collection});
+  const upsertRun = db._query(
+    'upsert {docId:@docId} insert @data update @data into @@collection',
+    { 'docId': body._data.docId, 'data': body._data, '@collection': body._params.collection });
 
   body._data.upsertMessage = upsertRun
 
@@ -61,10 +63,36 @@ router.post('/save_doc/run', (req, res) => {
   inflowSend(res, body._data)
 })
 
+router.get('/search/load', (req, res) => {
+  inflowSend(res, { "collection": "usersDoc" ,"search":[{"code":"0003T"}]})
 
 
+})
+router.post('/search/run', (req, res) => {
+  let body = JSON.parse(req.body)
+  let queries = req.queryParams
+  if (!body._params.collection) {
+    body._data.error = 'bad request - collection name is required';
+    return inflowSend(res, body._data)
+  }
+  let filters = []
+   body._params.search.map(el=>{
+    for(let elKey in el){
+
+      filters.push(`el.${elKey} == '${el[elKey]}'`)
+    }
+  }) 
+  let search = "filter " + filters.join(" && ")
+  let limit = queries['per_page'] ? Number(+queries['per_page']):1000
+  let skip = queries['page'] ? (Number(+queries['page'])-1)*limit :0
+
+  search+=` limit ${skip},${limit} return el`
+  const result = db._query(`for el in @@collection ${search} `,{"@collection":body._params.collection }).toArray()
+  return inflowSend(res, {result,search,limit,skip})
+
+})
 
 function inflowSend(res, data) {
-  res.write({ _data: data })
+  res.send({ _data: data })
 }
 
